@@ -31,7 +31,7 @@ public class Event {
 		return eventMap;
 	}
 	
-	// make private eventually
+	// make private eventually (and a class method, 'static')
 	public String checkMap(String xmlName) {
 		Map<String, String> map = createFieldListMap();
 		String checkField = map.get(xmlName);
