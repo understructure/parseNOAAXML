@@ -1,7 +1,10 @@
 package com.understructure.parseNOAAXML;
 
+import org.w3c.dom.Node;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Event {
 	private String id;
@@ -15,6 +18,7 @@ public class Event {
 	private String area;
 	private Boolean active;
 	private String updatedDate;
+	private String geocode;
 	
 	private Map<String, String> createFieldListMap() {
 		Map<String, String> eventMap = new HashMap<String, String>();
@@ -28,8 +32,19 @@ public class Event {
 		eventMap.put("cap:certainty", "certainty");
 		eventMap.put("cap:areaDesc", "area");
 		eventMap.put("updated", "updatedDate");
+		eventMap.put("cap:geocode", "geocode");
 		return eventMap;
 	}
+	
+	// https://stackoverflow.com/questions/25441088/group-by-counting-in-java-8-stream-api
+	// https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html#groupingBy-java.util.function.Function-java.util.stream.Collector-
+	private Map<String, Long> getCountsByState(ArrayList<Event> eventList) {
+		Map<String, Long> countsByState
+        = eventList.stream()
+        .collect(Collectors.groupingBy(Event::getArea, Collectors.counting()));
+		return countsByState;
+	}
+
 	
 	// make private eventually (and a class method, 'static')
 	public String checkMap(String xmlName) {
@@ -73,7 +88,15 @@ public class Event {
 		case("updatedDate"): {
 			setUpdatedDate(value);
 		}
+		case("geocode"): {
+			setGeocode(value);
 		}
+		}
+	}
+	
+	private String simpleValue(Node n) {
+		String eventValue = n.getTextContent().toString();
+		return eventValue;
 	}
 	
 	public String getId() {
@@ -87,6 +110,10 @@ public class Event {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public void setGeocode(String geocode) {
+		System.out.println(geocode.toString());
+		this.geocode = geocode;
 	}
 	public String getSummary() {
 		return summary;
